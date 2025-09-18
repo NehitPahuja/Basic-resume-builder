@@ -38,10 +38,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const downloadBtn = document.getElementById('download-btn');
 
   const placeholders = {
+
     fullName: 'John doe',
     jobTitle: 'Professional Title',
     email: 'you@example.com',
     phone: '+91',
+    
     location: 'City, Country',
     website: 'portfolio.website',
     summary:
@@ -309,7 +311,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const companyGroup = buildInputGroup('Company', {
         value: experience.company,
+
         placeholder: 'Company',
+
         onInput: (value) => {
           state.experiences[index].company = value;
           updatePreview();
