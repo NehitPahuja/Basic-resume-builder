@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     jobTitle: 'Professional Title',
     email: 'you@example.com',
     phone: '+91',
-
+    
     location: 'City, Country',
     website: 'portfolio.website',
     summary:
@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const companyGroup = buildInputGroup('Company', {
         value: experience.company,
-        
+
         placeholder: 'Company',
 
         onInput: (value) => {
