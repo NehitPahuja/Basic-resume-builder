@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="background-accent" aria-hidden="true"></div>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <span class="brand-icon" aria-hidden="true">🧭</span>
+          <div>
+            <h1>Resume Studio</h1>
+            <p>Shape a professional story that stands out.</p>
+          </div>
+        </div>
+        <button id="download-btn" class="primary-button" type="button">
+          Download PDF
+        </button>
+      </header>
+
+      <div class="layout">
+        <section class="preview-panel" aria-label="Live resume preview">
+          <article id="preview-card">
+            <div class="preview-top">
+              <div>
+                <h2 class="preview-name" data-preview="fullName">Your Name</h2>
+                <p class="preview-role" data-preview="jobTitle">Professional Title</p>
+              </div>
+            </div>
+
+            <div class="preview-content">
+              <section class="preview-section contact">
+                <h3>Contact</h3>
+                <div class="contact-grid">
+                  <div class="contact-item">
+                    <span>Email</span>
+                    <p data-preview="email">you@example.com</p>
+                  </div>
+                  <div class="contact-item">
+                    <span>Phone</span>
+                    <p data-preview="phone">(555) 123-4567</p>
+                  </div>
+                  <div class="contact-item">
+                    <span>Location</span>
+                    <p data-preview="location">City, Country</p>
+                  </div>
+                  <div class="contact-item">
+                    <span>Website</span>
+                    <p data-preview="website">portfolio.website</p>
+                  </div>
+                </div>
+              </section>
+
+              <section class="preview-section">
+                <div class="section-heading">
+                  <h3>Professional Summary</h3>
+                  <span class="accent-bar"></span>
+                </div>
+                <p class="summary-text" data-preview="summary">
+                  Write a short introduction about yourself, highlighting your top
+                  strengths and goals.
+                </p>
+              </section>
+
+              <section class="preview-section">
+                <div class="section-heading">
+                  <h3>Experience</h3>
+                  <span class="accent-bar"></span>
+                </div>
+                <div id="preview-experience" class="timeline"></div>
+                <p id="experience-empty" class="empty-state">
+                  Capture your proudest roles and achievements to show how you create
+                  impact.
+                </p>
+              </section>
+
+              <section class="preview-section">
+                <div class="section-heading">
+                  <h3>Education</h3>
+                  <span class="accent-bar"></span>
+                </div>
+                <div id="preview-education" class="education-list"></div>
+                <p id="education-empty" class="empty-state">
+                  Add your academic background to highlight your learning journey.
+                </p>
+              </section>
+
+              <section class="preview-section">
+                <div class="section-heading">
+                  <h3>Skills</h3>
+                  <span class="accent-bar"></span>
+                </div>
+                <div id="preview-skills" class="skill-pills"></div>
+                <p id="skills-empty" class="empty-state">
+                  List your core abilities to showcase what you do best.
+                </p>
+              </section>
+            </div>
+          </article>
+        </section>
+
+        <section class="form-panel" aria-label="Resume editor">
+          <form id="resume-form">
+            <section class="form-section">
+              <h2>Personal Details</h2>
+              <div class="field-grid">
+                <label class="input-group">
+                  <span>Full Name</span>
+                  <input
+                    type="text"
+                    placeholder="Jordan Sparks"
+                    data-section="personal"
+                    data-field="fullName"
+                  />
+                </label>
+                <label class="input-group">
+                  <span>Professional Title</span>
+                  <input
+                    type="text"
+                    placeholder="Product Designer"
+                    data-section="personal"
+                    data-field="jobTitle"
+                  />
+                </label>
+                <label class="input-group">
+                  <span>Email</span>
+                  <input
+                    type="email"
+                    placeholder="you@example.com"
+                    data-section="personal"
+                    data-field="email"
+                  />
+                </label>
+                <label class="input-group">
+                  <span>Phone</span>
+                  <input
+                    type="tel"
+                    placeholder="(555) 123-4567"
+                    data-section="personal"
+                    data-field="phone"
+                  />
+                </label>
+                <label class="input-group">
+                  <span>Location</span>
+                  <input
+                    type="text"
+                    placeholder="City, Country"
+                    data-section="personal"
+                    data-field="location"
+                  />
+                </label>
+                <label class="input-group">
+                  <span>Website</span>
+                  <input
+                    type="text"
+                    placeholder="portfolio.website"
+                    data-section="personal"
+                    data-field="website"
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section class="form-section">
+              <h2>Professional Summary</h2>
+              <label class="input-group">
+                <span>Summary</span>
+                <textarea
+                  rows="4"
+                  placeholder="Share a brief overview of your experience and what you're aiming for."
+                  data-section="personal"
+                  data-field="summary"
+                ></textarea>
+              </label>
+            </section>
+
+            <section class="form-section">
+              <div class="section-title-row">
+                <h2>Work History</h2>
+                <button type="button" id="add-experience" class="ghost-button">
+                  + Add Role
+                </button>
+              </div>
+              <div id="experience-fields" class="dynamic-list"></div>
+            </section>
+
+            <section class="form-section">
+              <div class="section-title-row">
+                <h2>Education</h2>
+                <button type="button" id="add-education" class="ghost-button">
+                  + Add Program
+                </button>
+              </div>
+              <div id="education-fields" class="dynamic-list"></div>
+            </section>
+
+            <section class="form-section">
+              <h2>Skills</h2>
+              <div class="skills-input">
+                <input
+                  type="text"
+                  id="skill-input"
+                  placeholder="Add a skill and press Enter"
+                />
+                <button type="button" id="add-skill" class="ghost-button">
+                  Add
+                </button>
+              </div>
+              <div id="skill-tags" class="skill-tags"></div>
+            </section>
+          </form>
+        </section>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNa5HqT0b62nV+lX7IuP89xDSHLVbkP4SRrped1IovnEwlHGawEq+y3OCAXoTr4Wr9PXgC7cmkLRwqO6S8VY+Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-/KmfYde4tUolnQG8X0FIBvm1ujhqkTPmo/9cN5Xjg5eQof8I4eAbOe+tfLOcAfeUeawuO/HEdBDEuDfSUFIzPg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
