@@ -36,6 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const skillsEmpty = document.getElementById('skills-empty');
   const skillInput = document.getElementById('skill-input');
   const downloadBtn = document.getElementById('download-btn');
+  const personalInputs = document.querySelectorAll('[data-section="personal"]');
+  const saveBtn = document.getElementById('save-btn');
+  const loadBtn = document.getElementById('load-btn');
+  const statusMessage = document.getElementById('save-status');
+  let lastSavedId = null;
+  let hasUnsavedChanges = false;
 
   const placeholders = {
 
@@ -43,11 +49,50 @@ document.addEventListener('DOMContentLoaded', () => {
     jobTitle: 'Professional Title',
     email: 'you@example.com',
     phone: '+91',
-    
+
     location: 'City, Country',
     website: 'portfolio.website',
     summary:
       'Write a short introduction about yourself, highlighting your top strengths and goals.',
+  };
+
+  const setStatus = (message = '', variant = 'neutral') => {
+    if (!statusMessage) return;
+    statusMessage.textContent = message;
+    statusMessage.classList.remove('status-success', 'status-error');
+    if (variant === 'success') {
+      statusMessage.classList.add('status-success');
+    } else if (variant === 'error') {
+      statusMessage.classList.add('status-error');
+    }
+  };
+
+  const toggleBackendButtons = (disabled) => {
+    if (saveBtn) saveBtn.disabled = disabled;
+    if (loadBtn) loadBtn.disabled = disabled;
+  };
+
+  const syncPersonalInputs = () => {
+    personalInputs.forEach((input) => {
+      const field = input.dataset.field;
+      if (!field) return;
+      input.value = state.personal[field] || '';
+    });
+  };
+
+  const buildResumePayload = () => ({
+    personal: { ...state.personal },
+    experiences: state.experiences.map((experience) => ({ ...experience })),
+    educations: state.educations.map((education) => ({ ...education })),
+    skills: [...state.skills],
+  });
+
+  const markUnsaved = () => {
+    if (!hasUnsavedChanges) {
+      setStatus('Unsaved changes. Save your draft to keep updates.');
+    }
+    hasUnsavedChanges = true;
+    lastSavedId = null;
   };
 
   const cleanText = (value) => (typeof value === 'string' ? value.trim() : '');
@@ -289,6 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
       removeBtn.textContent = 'Remove role';
       removeBtn.addEventListener('click', () => {
         state.experiences.splice(index, 1);
+        markUnsaved();
         renderExperienceFields();
         updatePreview();
       });
@@ -304,6 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
         onInput: (value) => {
           state.experiences[index].title = value;
           heading.textContent = cleanText(value) || `Role ${index + 1}`;
+          markUnsaved();
           updatePreview();
         },
       });
@@ -316,6 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         onInput: (value) => {
           state.experiences[index].company = value;
+          markUnsaved();
           updatePreview();
         },
       });
@@ -326,6 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
         placeholder: 'Remote / City',
         onInput: (value) => {
           state.experiences[index].location = value;
+          markUnsaved();
           updatePreview();
         },
       });
@@ -336,6 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
         value: experience.start,
         onInput: (value) => {
           state.experiences[index].start = value;
+          markUnsaved();
           updatePreview();
         },
       });
@@ -346,6 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
         value: experience.end,
         onInput: (value) => {
           state.experiences[index].end = value;
+          markUnsaved();
           updatePreview();
         },
       });
@@ -360,6 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
         placeholder: 'Share your biggest wins. Use new lines to add separate highlights.',
         onInput: (value) => {
           state.experiences[index].description = value;
+          markUnsaved();
           updatePreview();
         },
       });
@@ -395,6 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
       removeBtn.textContent = 'Remove program';
       removeBtn.addEventListener('click', () => {
         state.educations.splice(index, 1);
+        markUnsaved();
         renderEducationFields();
         updatePreview();
       });
@@ -410,6 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
         onInput: (value) => {
           state.educations[index].program = value;
           heading.textContent = cleanText(value) || `Program ${index + 1}`;
+          markUnsaved();
           updatePreview();
         },
       });
@@ -420,6 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
         placeholder: 'University of Somewhere',
         onInput: (value) => {
           state.educations[index].school = value;
+          markUnsaved();
           updatePreview();
         },
       });
@@ -430,6 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
         placeholder: '2019 – 2023',
         onInput: (value) => {
           state.educations[index].year = value;
+          markUnsaved();
           updatePreview();
         },
       });
@@ -444,6 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
         placeholder: 'List noteworthy courses, honors, or extracurriculars.',
         onInput: (value) => {
           state.educations[index].details = value;
+          markUnsaved();
           updatePreview();
         },
       });
@@ -477,6 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
       removeBtn.textContent = '×';
       removeBtn.addEventListener('click', () => {
         state.skills.splice(index, 1);
+        markUnsaved();
         renderSkillTags();
         updatePreview();
       });
@@ -484,6 +542,43 @@ document.addEventListener('DOMContentLoaded', () => {
       tag.appendChild(removeBtn);
       skillTagsContainer.appendChild(tag);
     });
+  };
+
+  const applyLoadedResume = (resume) => {
+    if (!resume || typeof resume !== 'object') return;
+
+    state.personal = {
+      ...state.personal,
+      ...(resume.personal && typeof resume.personal === 'object' ? resume.personal : {}),
+    };
+
+    state.experiences = Array.isArray(resume.experiences)
+      ? resume.experiences
+          .filter((item) => item && typeof item === 'object')
+          .map((item) => ({ ...createExperienceTemplate(), ...item }))
+      : [];
+
+    state.educations = Array.isArray(resume.educations)
+      ? resume.educations
+          .filter((item) => item && typeof item === 'object')
+          .map((item) => ({ ...createEducationTemplate(), ...item }))
+      : [];
+
+    state.skills = Array.isArray(resume.skills)
+      ? resume.skills
+          .map((skill) => (typeof skill === 'string' ? skill.trim() : ''))
+          .filter(Boolean)
+      : [];
+
+    if (skillInput) {
+      skillInput.value = '';
+    }
+
+    syncPersonalInputs();
+    renderExperienceFields();
+    renderEducationFields();
+    renderSkillTags();
+    updatePreview();
   };
 
   const addSkill = () => {
@@ -496,14 +591,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     state.skills.push(value);
     skillInput.value = '';
+    markUnsaved();
     renderSkillTags();
     updatePreview();
   };
 
-  document.querySelectorAll('[data-section="personal"]').forEach((input) => {
+  personalInputs.forEach((input) => {
     const field = input.dataset.field;
+    if (!field) return;
     input.addEventListener('input', (event) => {
       state.personal[field] = event.target.value;
+      markUnsaved();
       updatePreview();
     });
   });
@@ -512,11 +610,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('add-experience')?.addEventListener('click', () => {
     state.experiences.push(createExperienceTemplate());
+    markUnsaved();
     renderExperienceFields();
   });
 
   document.getElementById('add-education')?.addEventListener('click', () => {
     state.educations.push(createEducationTemplate());
+    markUnsaved();
     renderEducationFields();
   });
 
@@ -526,6 +626,84 @@ document.addEventListener('DOMContentLoaded', () => {
     if (event.key === 'Enter') {
       event.preventDefault();
       addSkill();
+    }
+  });
+
+  saveBtn?.addEventListener('click', async () => {
+    toggleBackendButtons(true);
+    setStatus('Saving draft…');
+    try {
+      const response = await fetch('/api/resumes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildResumePayload()),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      const { id } = data;
+      lastSavedId = id || null;
+      hasUnsavedChanges = false;
+
+      let message = id ? `Draft saved! ID: ${id}` : 'Draft saved!';
+      if (id && navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(id);
+          message = `Draft saved! ID copied: ${id}`;
+        } catch (clipboardError) {
+          console.warn('Unable to copy draft ID to clipboard', clipboardError);
+        }
+      }
+
+      setStatus(message, 'success');
+    } catch (error) {
+      console.error('Failed to save draft', error);
+      setStatus('Unable to save draft. Ensure the backend server is running.', 'error');
+      hasUnsavedChanges = true;
+    } finally {
+      toggleBackendButtons(false);
+    }
+  });
+
+  loadBtn?.addEventListener('click', async () => {
+    const inputId = window.prompt('Enter the draft ID to load');
+    if (!inputId) return;
+    const id = inputId.trim();
+    if (!id) return;
+
+    toggleBackendButtons(true);
+    setStatus('Loading draft…');
+
+    try {
+      const response = await fetch(`/api/resumes/${encodeURIComponent(id)}`);
+      if (response.status === 404) {
+        setStatus('Draft not found. Double-check the ID and try again.', 'error');
+        return;
+      }
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const resume = await response.json();
+      applyLoadedResume(resume);
+      lastSavedId = id;
+      hasUnsavedChanges = false;
+
+      const fullName = resume?.personal?.fullName
+        ? cleanText(resume.personal.fullName)
+        : '';
+      const message = fullName
+        ? `Draft for ${fullName} loaded.`
+        : 'Draft loaded successfully.';
+      setStatus(message, 'success');
+    } catch (error) {
+      console.error('Failed to load draft', error);
+      setStatus('Unable to load draft. Ensure the backend server is running and the ID is correct.', 'error');
+    } finally {
+      toggleBackendButtons(false);
     }
   });
 
@@ -578,4 +756,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderEducationFields();
   renderSkillTags();
   updatePreview();
+  syncPersonalInputs();
+  setStatus('');
 });

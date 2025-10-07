@@ -23,10 +23,24 @@
             <p>Shape a professional story that stands out.</p>
           </div>
         </div>
-        <button id="download-btn" class="primary-button" type="button">
-          Download PDF
-        </button>
+        <div class="header-actions" role="group" aria-label="Resume actions">
+          <button id="save-btn" class="secondary-button" type="button">
+            Save Draft
+          </button>
+          <button id="load-btn" class="secondary-button" type="button">
+            Load Draft
+          </button>
+          <button id="download-btn" class="primary-button" type="button">
+            Download PDF
+          </button>
+        </div>
       </header>
+      <p
+        id="save-status"
+        class="status-message"
+        role="status"
+        aria-live="polite"
+      ></p>
 
       <div class="layout">
         <section class="preview-panel" aria-label="Live resume preview">

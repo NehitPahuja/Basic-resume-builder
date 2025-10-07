@@ -1,0 +1,26 @@
+{
+  "name": "basic-resume-builder",
+  "version": "1.0.0",
+  "description": "A resume builder with a simple Express backend for saving and loading drafts.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "resume",
+    "builder",
+    "express",
+    "backend"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.3",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
