@@ -7,7 +7,7 @@
 ![CSS3](https://img.shields.io/badge/CSS3-blue?logo=css3\&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-yellow?logo=javascript\&logoColor=black)
 
-A lightweight, browser-based resume builder to quickly draft a professional CV and export it as a PDF. No signup. No backend. Just open and edit.
+A lightweight, browser-based resume builder to quickly draft a professional CV and export it as a PDF. No signup required—and now includes an optional Node.js backend so you can save and reload drafts from any device.
 
 [**Live Demo**](https://basic-resume-builder-lemon.vercel.app/) • [**Repository**](https://github.com/NehitPahuja/Basic-resume-builder)
 
@@ -17,20 +17,47 @@ A lightweight, browser-based resume builder to quickly draft a professional CV a
 * Work/Education sections: Add roles and programs interactively.
 * Skills block: Simple list for quick scanning.
 * One-click PDF: Use the **Download PDF** button to export your resume.
-* No server required: 100% static — HTML, CSS, and JavaScript only.
+* Save & load drafts: Persist resumes to the Express backend and reload them later with a shareable draft ID.
 
 ## Tech Stack
 
 * HTML5 – structure
 * CSS3 – layout & styles
 * Vanilla JavaScript – interactivity (form fields, add/remove items, PDF trigger)
+* Node.js + Express – lightweight REST API for saving and loading resume drafts
 
 
-3. **Use**
+## Getting Started
 
-   * Click fields to edit content.
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/NehitPahuja/Basic-resume-builder.git
+   cd Basic-resume-builder
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Start the backend + static server**
+
+   ```bash
+   npm start
+   ```
+
+   The app will be available at [http://localhost:4000](http://localhost:4000).
+
+4. **Build your resume**
+
+   * Click fields to edit content in the live preview.
    * Add entries under **Work History** / **Education**.
-   * Click **Download PDF** to export.
+   * Click **Save Draft** to store a copy on the backend—an ID will be generated so you can reload it later with **Load Draft**.
+   * Click **Download PDF** to export a polished copy.
+
+> Prefer the original static version? Open `index.html` directly in your browser without starting the backend (save/load will be unavailable).
 
 ## Project Structure
 
@@ -38,8 +65,25 @@ A lightweight, browser-based resume builder to quickly draft a professional CV a
 .
 ├─ index.html     # Layout & content areas
 ├─ styles.css     # Styling
-└─ script.js      # Field logic, add/remove items, PDF trigger
+├─ script.js      # Field logic, add/remove items, PDF trigger, backend integration
+├─ server.js      # Express server that serves static assets + REST API
+├─ package.json   # Project metadata & dependencies
+├─ data/          # JSON storage for saved drafts (gitignored)
+└─ .gitignore
 ```
+
+## REST API
+
+The backend persists drafts to `data/resumes.json` on disk and exposes a small REST API:
+
+| Method | Endpoint | Description |
+| ------ | -------- | ----------- |
+| `GET`  | `/api/health` | Health check for uptime monitoring. |
+| `POST` | `/api/resumes` | Save a draft. Expects the same shape as the frontend state and returns `{ id }`. |
+| `GET`  | `/api/resumes` | List saved drafts with minimal metadata (ID, name, job title, timestamp). |
+| `GET`  | `/api/resumes/:id` | Retrieve a full draft by ID for loading back into the editor. |
+
+> Drafts are stored unencrypted on disk for simplicity. Use environment-level protections or swap in a different persistence layer before deploying publicly.
 
 ## Deploy
 
