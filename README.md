@@ -115,4 +115,3 @@ Because it’s static, you can deploy anywhere:
 Demo: [basic-resume-builder-lemon.vercel.app](https://basic-resume-builder-lemon.vercel.app/)
 
 
-Do you also want me to **add shields.io badges** (like Tech Stack, Live Demo, Stars, Forks) at the top for a more professional look?
